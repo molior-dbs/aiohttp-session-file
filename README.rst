@@ -16,6 +16,7 @@ A trivial usage example:
 
     import asyncio
     import shutil
+    import tempfile
     import time
 
     from aiohttp import web
@@ -43,7 +44,6 @@ A trivial usage example:
 
     async def make_app():
         app = web.Application()
-        loop = asyncio.get_event_loop()
 
         dirpath = await setup_dir(app)
 
