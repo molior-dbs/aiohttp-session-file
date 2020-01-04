@@ -40,6 +40,8 @@ class FileStorage(AbstractStorage):
             expiration_filepath = filepath.with_suffix('.expiration')
             if expiration_filepath.exists():
                 async with aiofiles.open(expiration_filepath, 'r') as fp:
+                    # Expiration file should not be broken unless file writing
+                    # is interrupted and empty file is created.
                     try:
                         expiration = int(await fp.read())
                     except (TypeError, ValueError):
@@ -47,11 +49,23 @@ class FileStorage(AbstractStorage):
                 if expiration is None:
                     # remove invalid expiration file
                     expiration_filepath.unlink()
-                if expiration and expiration < int(time()):  # expired
-                    filepath.unlink(missing_ok=True)
-                    expiration_filepath.unlink()
-                    return Session(None, data=None,
-                                   new=True, max_age=self.max_age)
+
+                # The following case should not happen after
+                # `self.load_cookie() is not None`.
+
+                # if expiration and expiration < int(time()):  # expired
+                #     # The `missing_ok` argument is added in Python 3.8.
+                #     # filepath.unlink(missing_ok=True)
+                #     try:
+                #         filepath.unlink()
+                #     except FileNotFoundError:
+                #         pass
+                #     expiration_filepath.unlink()
+                #     return Session(None, data=None,
+                #                    new=True, max_age=self.max_age)
+
+                # So expiry session files need to be cleaned up outside of
+                # this tiny library.
 
             if filepath.exists():
                 async with aiofiles.open(filepath, 'r') as fp:

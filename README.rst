@@ -55,3 +55,8 @@ A trivial usage example:
 
 
     web.run_app(make_app())
+
+.. NOTE:: Expiry session files need to be cleaned up outside of this tiny library.
+          Please refer to `issue#1`_.
+
+.. _`issue#1`: https://github.com/zhangkaizhao/aiohttp-session-file/issues/1
