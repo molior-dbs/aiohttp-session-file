@@ -6,7 +6,7 @@ from time import time
 import aiofiles
 from aiohttp_session import AbstractStorage, Session
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 
 class FileStorage(AbstractStorage):
