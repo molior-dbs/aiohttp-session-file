@@ -305,3 +305,42 @@ async def test_file_max_age_over_30_days(aiohttp_client, dirpath):
 
     resp_content = await resp.text()
     assert resp_content == 'TEST_VALUE'
+
+
+async def test_reused_expired_session_should_be_deleted(
+        aiohttp_client, dirpath):
+    async def handler(request):
+        session = await get_session(request)
+        exp_param = request.rel_url.query.get('exp', None)
+        if exp_param is None:
+            session['a'] = 1
+            session['b'] = 2
+        else:
+            assert {} == session
+
+        return web.Response(body=b'OK')
+
+    client = await aiohttp_client(
+        create_app(handler, dirpath, 2)
+    )
+    resp = await client.get('/')
+    assert resp.status == 200
+
+    assert 'AIOHTTP_SESSION' in resp.cookies
+    key = resp.cookies['AIOHTTP_SESSION'].value
+    storage_key = 'AIOHTTP_SESSION_' + key
+
+    await asyncio.sleep(5)
+
+    # reuse session key
+    client.session.cookie_jar.update_cookies({'AIOHTTP_SESSION': key})
+
+    resp = await client.get('/?exp=yes')
+    assert resp.status == 200
+
+    # session file and expiration file should be deleted
+    dirpath = Path(dirpath)
+    filepath = dirpath / storage_key
+    assert not filepath.exists()
+    expiration_filepath = filepath.with_suffix('.expiration')
+    assert not expiration_filepath.exists()

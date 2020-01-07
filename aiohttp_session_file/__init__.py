@@ -52,20 +52,23 @@ class FileStorage(AbstractStorage):
 
                 # The following case should not happen after
                 # `self.load_cookie() is not None`.
+                # But session key in cookies can be reused in some attack.
+                # So we still need to verify expiration of cookies for
+                # security consideration.
 
-                # if expiration and expiration < int(time()):  # expired
-                #     # The `missing_ok` argument is added in Python 3.8.
-                #     # filepath.unlink(missing_ok=True)
-                #     try:
-                #         filepath.unlink()
-                #     except FileNotFoundError:
-                #         pass
-                #     expiration_filepath.unlink()
-                #     return Session(None, data=None,
-                #                    new=True, max_age=self.max_age)
+                if expiration and expiration < int(time()):  # expired
+                    # The `missing_ok` argument is added in Python 3.8.
+                    # filepath.unlink(missing_ok=True)
+                    try:
+                        filepath.unlink()
+                    except FileNotFoundError:
+                        pass
+                    expiration_filepath.unlink()
+                    return Session(None, data=None,
+                                   new=True, max_age=self.max_age)
 
-                # So expiry session files need to be cleaned up outside of
-                # this tiny library.
+                # But expiry session files still need to be cleaned up outside
+                # of this tiny library.
 
             if filepath.exists():
                 async with aiofiles.open(filepath, 'r') as fp:
