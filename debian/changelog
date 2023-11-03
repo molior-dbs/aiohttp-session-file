@@ -1,0 +1,5 @@
+aiohttp-session-file (0.0.3-1) stable; urgency=medium
+
+  * debianize
+
+ -- André Roth <andre.roth@roche.com>  Sat, 18 Mar 2023 15:44:54 +0100

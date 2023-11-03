@@ -1,0 +1,12 @@
+Source: aiohttp-session-file
+Maintainer: André Roth <neolynx@gmail.com>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 7), dh-python, python3-setuptools, python3-all, git
+Standards-Version: 3.9.7
+#Web: https://github.com/zhangkaizhao/aiohttp-session-file
+
+Package: python3-aiohttp-session-file
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-aiohttp
+Description: Provide file based sessions for aiohttp.web
