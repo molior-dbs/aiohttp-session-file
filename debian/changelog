@@ -1,3 +1,9 @@
+aiohttp-session-file (0.0.3-2) stable; urgency=medium
+
+  * build for molior 1.5
+
+ -- André Roth <neolynx@gmail.com>  Wed, 13 Dec 2023 18:25:37 +0100
+
 aiohttp-session-file (0.0.3-1) stable; urgency=medium
 
   * debianize
